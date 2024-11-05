@@ -1,4 +1,4 @@
-![Logo](https://github.com/Assests/datazen-high-resolution-logo.png)
+![Logo](https://github.com/RohitNegi12/DataZen-Your-No-Code-Data-Science-Assistant-for-Quick-Insights/blob/main/Assests/datazen-high-resolution-logo.jpeg?raw=true)
 
 # DataZen
 
