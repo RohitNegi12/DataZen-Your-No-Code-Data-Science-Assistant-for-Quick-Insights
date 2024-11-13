@@ -11,7 +11,6 @@ DataZen aims to streamline data exploration by offering a user-friendly interfac
 - Select and categorize data columns for analysis.
 - Handle missing data with ease.
 - Generate summary statistics and visualize correlations.
-- Create specific visualizations like product-based sales trends.
 
 ## 🚀 Features
 
@@ -24,30 +23,26 @@ DataZen aims to streamline data exploration by offering a user-friendly interfac
 - **Numerical Columns**: Choose columns with numerical data (e.g., Sales).
 - **Date/Time Columns**: Select date/time columns for temporal analysis.
 
-### 3. Data Preprocessing
-- **Handle Missing Values**: Fill with mean, median, or drop missing rows.
-- **Data Type Conversion**: Convert integer columns to datetime if specified.
-
-### 4. Exploratory Data Analysis (EDA)
+### 3. Exploratory Data Analysis (EDA)
 - **Summary Statistics**: Get mean, median, and standard deviation for numerical data.
 - **Correlation Matrix**: Visualize numerical relationships with a heatmap.
 
-### 5. Data Visualization
+### 4. Data Visualization
 - **Sales by Product**: Compare sales across categories with bar charts.
 - **Sales Trends Over Time**: Plot trends over dates to identify patterns.
 
-### 6. User-Friendly Interface
+### 5. User-Friendly Interface
 - **Custom Styling**: Enjoy a consistent, modern look.
 - **Interactive Sidebar**: Easily navigate all options via sidebar.
 
-### 7. Additional Features
+### 6. Additional Features
 - **Explain Correlation Matrix**: Get explanations for data relationships.
 - **Preprocessed Data Display**: View the cleaned dataset.
 
 ## 🛠️ Technologies Used
 
 - **Python 3.10.10**
-- **Streamlit**: Interactive web app framework.
+- **Dash**: Python web app framework.
 - **Pandas**: Data manipulation.
 - **Matplotlib & Seaborn**: Visualization.
 - **NumPy**: Numerical operations.
