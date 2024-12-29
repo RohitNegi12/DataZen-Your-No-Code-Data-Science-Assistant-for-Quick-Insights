@@ -5,11 +5,11 @@ import io
 import base64
 import os
 import plotly.express as px
-from dash_insights import numerical_insights, categorical_numerical_info, time_series_info, outliers
+from DataZen.dash_insights import numerical_insights, categorical_numerical_info, time_series_info, outliers
 import dash_bootstrap_components as dbc
 from sklearn.cluster import KMeans
 import numpy as np
-from agent import query
+from DataZen.agent import query
 
 
 # Specify the directory where files will be saved
