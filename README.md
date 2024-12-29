@@ -1,8 +1,8 @@
-<<<<<<< HEAD
+
 ![Logo](https://github.com/Assests/datazen-high-resolution-logo.jpeg)
 =======
 ![Logo](https://github.com/RohitNegi12/DataZen-Your-No-Code-Data-Science-Assistant-for-Quick-Insights/blob/main/Assests/datazen-high-resolution-logo.jpeg?raw=true)
->>>>>>> b7b52de78eed2b759cd365e08d02baf424002d85
+
 
 # DataZen
 
