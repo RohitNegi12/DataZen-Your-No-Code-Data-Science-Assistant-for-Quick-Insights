@@ -1,10 +1,4 @@
+streamlit
 pandas
-scikit-learn
-langchain
-langchain-groq
-scipy
 numpy
-dash
-dash-bootstrap-components
-langchain-experimental
-python-dotenv
+plotly
