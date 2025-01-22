@@ -3,4 +3,7 @@ pandas
 numpy
 plotly
 scikit-learn
-langchain-groq 
+langchain-groq
+python-dotenv
+langchain-experimental
+matplotlib

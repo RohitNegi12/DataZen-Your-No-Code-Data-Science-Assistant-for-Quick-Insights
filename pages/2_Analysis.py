@@ -4,6 +4,11 @@ import plotly.express as px
 from sklearn.cluster import KMeans
 
 
+st.set_page_config(
+    page_title = "DataZen",
+    page_icon = "🍃"
+)
+
 st.title("Analysis Page")
 data = st.session_state.get('dataset')
 
@@ -21,24 +26,17 @@ else:
         st.session_state['plot_type'] = None
     if 'selected_column' not in st.session_state:
         st.session_state['selected_column'] = None
-    if 'dist_col' not in st.session_state:
-        st.session_state['dist_col']=None
-    st.dataframe(data.head(100), height=200)
-
-
-
-    # Display the dataframe
-    st.dataframe(data)
+    # if 'dist_col' not in st.session_state:
+    #     st.session_state['dist_col'] = 0
+    st.dataframe(data.head(100), height=210)
 
     # Select the type of plot
-    plot_type = st.selectbox("Select the type of plot", ["Scatter with Clusters", "Distribution Plot"],index=["Scatter with Clusters", "Distribution Plot"].index(st.session_state['plot_type']),
+    st.selectbox("Select the type of plot", ["Scatter with Clusters", "Distribution Plot"],index=1,
             key="plot_type")
 
     # Scatter plot with clusters
-    if st.session_state.get('selected_column') is None:
-        st.session_state['selected_column']="Scatter with Clusters"
 
-    if "Scatter with Clusters" == st.session_state.get('selected_column') :
+    if "Scatter with Clusters" == st.session_state.get('plot_type'):
         try:
             # Persist X and Y column selections
             x_col = st.selectbox(
@@ -86,14 +84,12 @@ else:
             st.error(f"An unexpected error occurred: {e}")
 
     # Distribution plot
-    elif plot_type == "Distribution Plot":
+    elif st.session_state["plot_type"] == "Distribution Plot":
         col = st.selectbox(
             "Select column for distribution",
-            data.columns,
-            index=data.columns.get_loc(st.session_state['dist_col'])
-            if st.session_state['dist_col'] in data.columns else 0
+            list(data), # columns in a list
+            index=0,
         )
-        st.session_state['dist_col'] = col
 
         if data[col].dtype == 'object':
             # Generate a DataFrame for the bar chart
@@ -115,6 +111,3 @@ else:
         
         # Display the chart
         st.plotly_chart(fig)
-
-    else:
-        st.warning("Please upload a dataset on the Home page first.")
