@@ -101,7 +101,6 @@ else:
 
     # tmp_df = data
     time_series_insights = time_series_info(data)
-    print(time_series_insights)
     if(len(time_series_insights) > 0):
         # Time Series Insights Section
         st.title("Time Series Insights")
@@ -129,7 +128,6 @@ else:
         st.title("Insights from Categorical vs Numerical Columns")
 
         cat_num_insights = categorical_numerical_info(data)
-        print(cat_num_insights)
         # Sidebar for selection
         keys = list(cat_num_insights.keys())
         selected_key = st.selectbox("Select columns (categorical vs numerical):", keys)
