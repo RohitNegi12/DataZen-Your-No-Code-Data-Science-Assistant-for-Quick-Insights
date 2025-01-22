@@ -136,9 +136,9 @@ else:
         insight = cat_num_insights[selected_key]
 
         # Plotting the graph
-        # avg_df = data.groupby([categorical_column])[numerical_column].mean().reset_index()
-        fig = px.bar(data, x=categorical_column, y=numerical_column, 
-                    title=f"{categorical_column} vs {numerical_column}", 
+        avg_df = data.groupby([categorical_column])[numerical_column].mean().reset_index()
+        fig = px.bar(avg_df, x=categorical_column, y=numerical_column, 
+                    title=f"\"{categorical_column} vs avg. {numerical_column}", 
                     labels={categorical_column: categorical_column.capitalize(), 
                             numerical_column: numerical_column.capitalize()})
 
