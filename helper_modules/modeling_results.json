@@ -1,0 +1,43 @@
+{
+    "selected_features": [
+        "math score",
+        "reading score",
+        "writing score"
+    ],
+    "target_feature": "gender",
+    "target_type": "categorical",
+    "model_performance": [
+        {
+            "model": "Logistic Regression",
+            "score": 0.895
+        },
+        {
+            "model": "Decision Tree Classifier",
+            "score": 0.805
+        },
+        {
+            "model": "Random Forest Classifier",
+            "score": 0.865
+        },
+        {
+            "model": "Gradient Boosting Classifier",
+            "score": 0.875
+        }
+    ],
+    "best_model": {
+        "model": "Logistic Regression",
+        "score": 0.895
+    },
+    "confusion_matrix": [
+        [
+            90,
+            7
+        ],
+        [
+            14,
+            89
+        ]
+    ],
+    "shap_values": null,
+    "residuals": null
+}

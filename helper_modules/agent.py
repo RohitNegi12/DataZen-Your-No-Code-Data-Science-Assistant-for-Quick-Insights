@@ -9,7 +9,7 @@ from langchain_core.prompts import ChatPromptTemplate
 load_dotenv()
 
 llm = ChatGroq(
-    model="mixtral-8x7b-32768",
+    model="llama-3.3-70b-versatile",
     temperature=0,
     max_tokens=None,
     timeout=None,
@@ -40,6 +40,7 @@ def query(query:str, df:pd.DataFrame):
                         1) Answer the user query and support your answer with facts
                         2) Also include observable trends between variables, necessary relations and patterns 
                         3) Dont give any code in output
+                        4) if the user asks for modelling results then use this helper_modules/modeling_results.json.
                     """
                     
                 )

@@ -1,0 +1,43 @@
+{
+    "selected_features": [
+        "math score",
+        "reading score",
+        "writing score"
+    ],
+    "target_feature": "test preparation course",
+    "target_type": "categorical",
+    "model_performance": [
+        {
+            "model": "Logistic Regression",
+            "score": 0.68
+        },
+        {
+            "model": "Decision Tree Classifier",
+            "score": 0.58
+        },
+        {
+            "model": "Random Forest Classifier",
+            "score": 0.61
+        },
+        {
+            "model": "Gradient Boosting Classifier",
+            "score": 0.62
+        }
+    ],
+    "best_model": {
+        "model": "Logistic Regression",
+        "score": 0.68
+    },
+    "confusion_matrix": [
+        [
+            26,
+            53
+        ],
+        [
+            11,
+            110
+        ]
+    ],
+    "shap_values": null,
+    "residuals": null
+}

@@ -14,7 +14,7 @@ df_5_rows=df.head()
 csv_string=df_5_rows.to_string(index=False)
 
 llm = ChatGroq(
-    model="mixtral-8x7b-32768",
+    model="llama-3.3-70b-versatile",
     temperature=0,
     max_tokens=None,
     timeout=None,
@@ -26,9 +26,10 @@ llm = ChatGroq(
 prompt=chat_template = ChatPromptTemplate.from_messages(
         [
             ("system",
-             "You're a data visualization expert and use your favourite graphing library Plotly only. Suppose, that "
-             "the data is provided as as helper_modules/test.csv file. Here are the first five rows of the data set: {data}"
-             "Follow the user's indications when creating graph"
+             "1) You're a data visualization expert and use your favourite graphing library Plotly only. Suppose, that "
+             "2) the data is provided as as helper_modules/test.csv file. Here are the first five rows of the data set: {data}"
+             "3) Follow the user's indications when creating graph"
+
              ),
              MessagesPlaceholder(variable_name="messages"),
         ]
@@ -36,10 +37,15 @@ prompt=chat_template = ChatPromptTemplate.from_messages(
 
 chain= prompt | llm
 
+
 def get_fig_from_code(code):
     local_variables={}
-    exec(code,{},local_variables)
-    return local_variables['fig']
+    try:
+        exec(code,{},local_variables)
+        return local_variables['fig']
+    except:
+        return "Try again and Describe it more clearly"
+        
 
 def generate_code(user_input):
     # Create a HumanMessagePromptTemplate object

@@ -2,6 +2,13 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 from sklearn.cluster import KMeans
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+import sys
+import os
+
+# Then import normally
+from helper_modules.dash_insights import categorical_numerical_info, numerical_insights, time_series_info, outliers
 
 
 st.title("Analysis Page")
@@ -10,111 +17,156 @@ data = st.session_state.get('dataset')
 if data is None:
     st.warning("Please upload a dataset on the Home page first.")
 else:
-    # Ensure the necessary session state keys exist
-    if 'x_col' not in st.session_state:
-        st.session_state['x_col'] = None
-    if 'y_col' not in st.session_state:
-        st.session_state['y_col'] = None
-    if 'num_clusters' not in st.session_state:
-        st.session_state['num_clusters'] = 3
-    if 'plot_type' not in st.session_state:
-        st.session_state['plot_type'] = None
-    if 'selected_column' not in st.session_state:
-        st.session_state['selected_column'] = None
-    if 'dist_col' not in st.session_state:
-        st.session_state['dist_col']=None
-    st.dataframe(data.head(100), height=200)
 
+    # Numerical Insights Section
+    st.title("Numerical Insights")
 
+    # Compute the correlation matrix for all numerical columns
+    def get_correlation_matrix(df):
+        numerical_cols = df.select_dtypes(include=['number']).columns
+        return df[numerical_cols].corr()
 
-    # Display the dataframe
-    st.dataframe(data)
+    correlation_matrix = get_correlation_matrix(data)
+    correlation_insights = numerical_insights(data)
 
-    # Select the type of plot
-    plot_type = st.selectbox("Select the type of plot", ["Scatter with Clusters", "Distribution Plot"],index=["Scatter with Clusters", "Distribution Plot"].index(st.session_state['plot_type']),
-            key="plot_type")
+    # Plot the correlation matrix
+    fig_corr = go.Figure(data=go.Heatmap(
+        z=correlation_matrix.values,
+        x=correlation_matrix.columns,
+        y=correlation_matrix.index,
+        colorscale='Viridis',
+        colorbar=dict(title="Correlation")
+    ))
+    fig_corr.update_layout(title="Correlation Matrix", xaxis_title="Columns", yaxis_title="Columns")
 
-    # Scatter plot with clusters
-    if st.session_state.get('selected_column') is None:
-        st.session_state['selected_column']="Scatter with Clusters"
+    # Display the correlation matrix and insights
+    st.plotly_chart(fig_corr)
+    st.write("### Correlation Insights:")
+    for insight in correlation_insights:
+        st.write(f"- {insight}")
 
-    if "Scatter with Clusters" == st.session_state.get('selected_column') :
-        try:
-            # Persist X and Y column selections
-            x_col = st.selectbox(
-                "Select X-axis column",
-                (data.select_dtypes(include='number')).columns,
-                index=(data.select_dtypes(include='number')).columns.get_loc(st.session_state['x_col'])
-                if st.session_state['x_col'] in data.columns else 0
-            )
-            st.session_state['x_col'] = x_col
+    numeric_cols = data.select_dtypes(include=['number']).columns
+    distribution_col = st.selectbox("Select columns (Data distribution):", numeric_cols)
+    if distribution_col:
+        st.subheader(f"Distribution of '{distribution_col}'")
 
-            y_col = st.selectbox(
-                "Select Y-axis column",
-                (data.select_dtypes(include='number')).columns,
-                index=(data.select_dtypes(include='number')).columns.get_loc(st.session_state['y_col'])
-                if st.session_state['y_col'] in data.columns else 0
-            )
-            st.session_state['y_col'] = y_col
-
-            # Persist the number of clusters
-            num_clusters = st.slider(
-                "Select number of clusters",
-                min_value=2,
-                max_value=10,
-                value=st.session_state['num_clusters']
-            )
-            st.session_state['num_clusters'] = num_clusters
-
-            # Perform clustering
-            kmeans = KMeans(n_clusters=num_clusters, random_state=0)
-            data['Cluster'] = kmeans.fit_predict(data[[x_col, y_col]])
-
-            # Create scatter plot
-            fig = px.scatter(
-                data, x=x_col, y=y_col, color=data['Cluster'].astype(str),
-                title="Scatter Plot with Clusters",
-                labels={"color": "Cluster"}
-            )
-            st.plotly_chart(fig)
-
-        except KeyError as e:
-            st.error(f"KeyError: {e}")
-        except ValueError as e:
-            st.error(f"ValueError: {e}")
-        except Exception as e:
-            st.error(f"An unexpected error occurred: {e}")
-
-    # Distribution plot
-    elif plot_type == "Distribution Plot":
-        col = st.selectbox(
-            "Select column for distribution",
-            data.columns,
-            index=data.columns.get_loc(st.session_state['dist_col'])
-            if st.session_state['dist_col'] in data.columns else 0
+        # Plot the distribution using Plotly
+        fig = px.histogram(
+            data_frame=data,
+            x=distribution_col,
+            nbins=30,  # You can adjust the number of bins
+            title=f"Distribution of {distribution_col}",
+            labels={distribution_col: distribution_col},  # Axis labels
+            color_discrete_sequence=['#636EFA']  # Customize the color
         )
-        st.session_state['dist_col'] = col
 
-        if data[col].dtype == 'object':
-            # Generate a DataFrame for the bar chart
-            value_counts_df = data[col].value_counts().reset_index()
-            value_counts_df.columns = ['Category', 'Count']  # Rename columns for clarity
-            
-            # Plot the bar chart
-            fig = px.bar(
-                value_counts_df, 
-                x="Category", y="Count", 
-                title=f"Category Distribution of {col}"
-            )
-        else:
-            # Plot histogram for numerical data
-            fig = px.histogram(
-                data, x=col, nbins=30, 
-                title=f"Distribution of {col}"
-            )
+        # Add density curve
+        fig.update_layout(bargap=0.1)
+        fig.update_traces(opacity=0.75)
+
+        # Display the plot in Streamlit
+        st.plotly_chart(fig, use_container_width=True)
+
+    col_x = st.selectbox("Select X-axis Numeric Column:", numeric_cols, key="col_x")
+    col_y = st.selectbox("Select Y-axis Numeric Column:", numeric_cols, key="col_y")
+
+    # Check if both columns are selected
+    if col_x and col_y:
+        st.subheader(f"Distribution Between '{col_x}' and '{col_y}'")
+
+        # Plot the scatter plot using Plotly
+        fig = px.scatter(
+            data_frame=data,
+            x=col_x,
+            y=col_y,
+            title=f"Scatter Plot: {col_x} vs {col_y}",
+            labels={col_x: col_x, col_y: col_y},  # Axis labels
+            color_discrete_sequence=['#EF553B'],  # Customize the color
+            opacity=0.75  # Set transparency for better visualization
+        )
+
+        # Update layout for better appearance
+        fig.update_layout(
+            xaxis_title=col_x,
+            yaxis_title=col_y,
+            template="plotly_white"
+        )
+
+        # Display the plot in Streamlit
+        st.plotly_chart(fig, use_container_width=True)
+
+
+    
+
+
+    # tmp_df = data
+    time_series_insights = time_series_info(data)
+    print(time_series_insights)
+    if(len(time_series_insights) > 0):
+        # Time Series Insights Section
+        st.title("Time Series Insights")
+
         
-        # Display the chart
-        st.plotly_chart(fig)
+        # Sidebar for time series insights
+        time_keys = list(time_series_insights.keys())
+        selected_time_key = st.selectbox("Select columns (time series):", time_keys)
+
+        time_column, numerical_column = selected_time_key
+        time_insight = time_series_insights[selected_time_key]
+
+        # Plotting the line chart
+        avg_df = data.groupby([time_column])[numerical_column].mean().reset_index()
+        fig_time = px.line(avg_df, x=time_column, y=numerical_column, 
+                        title=f"{time_column} vs {numerical_column}", 
+                        labels={time_column: time_column.capitalize(), 
+                                numerical_column: numerical_column.capitalize()})
+
+        # Display the graph and insight
+        st.plotly_chart(fig_time)
+        st.write(f"### Insight:\n{time_insight}")
 
     else:
-        st.warning("Please upload a dataset on the Home page first.")
+        st.title("Insights from Categorical vs Numerical Columns")
+
+        cat_num_insights = categorical_numerical_info(data)
+        print(cat_num_insights)
+        # Sidebar for selection
+        keys = list(cat_num_insights.keys())
+        selected_key = st.selectbox("Select columns (categorical vs numerical):", keys)
+
+        categorical_column, numerical_column = selected_key
+        insight = cat_num_insights[selected_key]
+
+        # Plotting the graph
+        # avg_df = data.groupby([categorical_column])[numerical_column].mean().reset_index()
+        fig = px.bar(data, x=categorical_column, y=numerical_column, 
+                    title=f"{categorical_column} vs {numerical_column}", 
+                    labels={categorical_column: categorical_column.capitalize(), 
+                            numerical_column: numerical_column.capitalize()})
+
+        # Display the graph and insight
+        st.plotly_chart(fig)
+        st.write(f"### Insight:\n{insight}")
+
+    
+
+    # Outlier Insights Section
+    st.title("Outliers")
+    outlier_insights = outliers(data)
+
+    # Plot all outliers in a grid fashion
+    outlier_cols = list(outlier_insights.keys())
+    fig_outliers = make_subplots(rows=1, cols=len(outlier_cols), subplot_titles=outlier_cols)
+
+    for i, col in enumerate(outlier_cols, start=1):
+        fig_box = px.box(data, y=col, title=col)
+        for trace in fig_box.data:
+            fig_outliers.add_trace(trace, row=1, col=i)
+
+    fig_outliers.update_layout(title_text="Outliers for Numerical Columns", showlegend=False)
+
+    # Display the outlier plots
+    st.plotly_chart(fig_outliers)
+    st.write("### Outlier Insights:")
+    for col, insight in outlier_insights.items():
+        st.write(f"- {insight}")

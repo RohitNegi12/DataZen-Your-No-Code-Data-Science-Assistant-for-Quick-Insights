@@ -20,12 +20,13 @@ if st.button("Submit", key="visual_submit"):
     if code_block_match:
         code_block=code_block_match.group(1).strip()
         cleaned_code=re.sub(r'(?m)^\s*fig\.show\(\)\s*$','',code_block)
+        print(cleaned_code)
         fig= get_fig_from_code(cleaned_code)
         
     try:
         fig
     except Exception as e:
         st.error("Try again and please describe it clearly")
-        st.exception(e)
+        # st.exception(e)
 
 
