@@ -18,6 +18,10 @@ import pickle
 import os
 import json
 
+st.set_page_config(
+    page_title = "DataZen",
+    page_icon = "🍃"
+)
 
 # Streamlit App Title
 st.title("Modeling")

@@ -2,6 +2,12 @@ import streamlit as st
 from helper_modules.agent import query
 from helper_modules.visualAgent import generate_code,get_fig_from_code
 import re
+
+st.set_page_config(
+    page_title = "DataZen",
+    page_icon = "🍃"
+)
+
 st.title("Chat Assistance")
 
 user_input=st.text_input("Enter your query")
