@@ -17,6 +17,9 @@ st.title("DataZen")
 uploaded_file = st.file_uploader("Upload your CSV dataset", type=["csv"])
 
 if uploaded_file is not None:
+    with open("helper_modules/test.csv", "wb") as f:
+        f.write(uploaded_file.getbuffer())
+        print("File Saved")
     st.session_state['dataset'] = pd.read_csv(uploaded_file)
     st.session_state['cleaned_dataset'] = st.session_state['dataset'].copy()
     st.success("Dataset uploaded successfully!")

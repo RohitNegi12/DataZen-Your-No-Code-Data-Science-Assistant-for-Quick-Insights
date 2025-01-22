@@ -18,7 +18,7 @@ else:
     if 'num_clusters' not in st.session_state:
         st.session_state['num_clusters'] = 3
     if 'plot_type' not in st.session_state:
-        st.session_state['plot_type'] = "Scatter with Clusters"
+        st.session_state['plot_type'] = None
     if 'selected_column' not in st.session_state:
         st.session_state['selected_column'] = None
     if 'dist_col' not in st.session_state:
