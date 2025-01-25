@@ -8,6 +8,9 @@ st.set_page_config(
     page_icon = "🍃"
 )
 
+if 'fig' not in st.session_state:
+    st.session_state['fig'] = None
+
 st.title("Chat Assistance")
 
 user_input=st.text_input("Enter your query")
@@ -28,11 +31,10 @@ if st.button("Submit", key="visual_submit"):
         cleaned_code=re.sub(r'(?m)^\s*fig\.show\(\)\s*$','',code_block)
         print(cleaned_code)
         fig= get_fig_from_code(cleaned_code)
+        st.session_state['fig']=fig
         
-    try:
-        fig
-    except Exception as e:
-        st.error("Try again and please describe it clearly")
+    
         # st.exception(e)
 
-
+if st.session_state['fig'] is not None:
+    st.session_state['fig']
