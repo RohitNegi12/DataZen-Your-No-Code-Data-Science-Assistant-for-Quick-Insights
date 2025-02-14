@@ -23,6 +23,17 @@ def remove_duplicates(df, columns):
         df = df.drop_duplicates()
     return df
 
+def handle_missing_values(df, column, method):
+    if method == "Drop":
+        df = df.dropna(subset=[column])
+    elif method == "Fill with Mean" and pd.api.types.is_numeric_dtype(df[column]):
+        df[column] = df[column].fillna(df[column].mean())
+    elif method == "Fill with Median" and pd.api.types.is_numeric_dtype(df[column]):
+        df[column] = df[column].fillna(df[column].median())
+    elif method == "Fill with Mode":
+        df[column] = df[column].fillna(df[column].mode()[0])
+    return df
+
 st.set_page_config(
     page_title = "DataZen",
     page_icon = "🍃"
@@ -53,6 +64,18 @@ else:
         if duplicate_columns:
             st.session_state['cleaned_dataset'] = remove_duplicates(df, duplicate_columns)
             st.success("Duplicates removed!")
+
+    # Option to handle missing values
+    st.subheader("Handle Missing Values")
+    null_values_df = st.session_state['cleaned_dataset'].isnull().sum().to_frame().T
+    null_values_df.index = ["Null Count"]
+    st.dataframe(null_values_df)
+    column = st.selectbox("Select a column to handle missing values", options=columns, key="missing_column")
+    method = st.selectbox("Select a method to handle missing values", options=["Drop", "Fill with Mean", "Fill with Median", "Fill with Mode"], key="missing_method")
+    if st.button("Handle Missing Values"):
+        st.session_state['cleaned_dataset'] = handle_missing_values(df, column, method)
+        st.success(f"Missing values handled for column: {column} using method: {method}")
+        st.rerun()
 
     # Display cleaned data
     st.subheader("Cleaned Dataset Preview")

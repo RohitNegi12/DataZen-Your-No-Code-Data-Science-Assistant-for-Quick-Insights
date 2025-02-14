@@ -70,4 +70,5 @@ else:
         else:
             st.error("Dataset not found! Please upload or set a dataset.")
 
-
+if st.session_state['fig'] is not None:
+    st.session_state['fig']

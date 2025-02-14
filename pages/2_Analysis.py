@@ -10,6 +10,10 @@ import os
 # Then import normally
 from helper_modules.dash_insights import categorical_numerical_info, numerical_insights, time_series_info, outliers
 
+st.set_page_config(
+    page_title = "DataZen",
+    page_icon = "🍃"
+)
 
 st.title("Analysis Page")
 data = st.session_state.get('dataset')
@@ -101,7 +105,6 @@ else:
 
     # tmp_df = data
     time_series_insights = time_series_info(data)
-    print(time_series_insights)
     if(len(time_series_insights) > 0):
         # Time Series Insights Section
         st.title("Time Series Insights")

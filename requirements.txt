@@ -2,9 +2,7 @@ streamlit
 pandas
 numpy
 plotly
-<<<<<<< HEAD
 scikit-learn
-=======
 langchain-groq
->>>>>>> refs/remotes/origin/main
-langchain-groq 
+matplotlib
+tabulate
