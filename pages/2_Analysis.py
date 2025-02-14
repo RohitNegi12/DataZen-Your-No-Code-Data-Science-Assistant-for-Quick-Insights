@@ -127,46 +127,50 @@ else:
 
     else:
         st.title("Insights from Categorical vs Numerical Columns")
+        try:
+            cat_num_insights = categorical_numerical_info(data)
+            print(cat_num_insights)
+            # Sidebar for selection
+            keys = list(cat_num_insights.keys())
+            selected_key = st.selectbox("Select columns (categorical vs numerical):", keys)
 
-        cat_num_insights = categorical_numerical_info(data)
-        print(cat_num_insights)
-        # Sidebar for selection
-        keys = list(cat_num_insights.keys())
-        selected_key = st.selectbox("Select columns (categorical vs numerical):", keys)
+            categorical_column, numerical_column = selected_key
+            insight = cat_num_insights[selected_key]
 
-        categorical_column, numerical_column = selected_key
-        insight = cat_num_insights[selected_key]
+            # Plotting the graph
+            # avg_df = data.groupby([categorical_column])[numerical_column].mean().reset_index()
+            fig = px.bar(data, x=categorical_column, y=numerical_column, 
+                        title=f"{categorical_column} vs {numerical_column}", 
+                        labels={categorical_column: categorical_column.capitalize(), 
+                                numerical_column: numerical_column.capitalize()})
 
-        # Plotting the graph
-        # avg_df = data.groupby([categorical_column])[numerical_column].mean().reset_index()
-        fig = px.bar(data, x=categorical_column, y=numerical_column, 
-                    title=f"{categorical_column} vs {numerical_column}", 
-                    labels={categorical_column: categorical_column.capitalize(), 
-                            numerical_column: numerical_column.capitalize()})
-
-        # Display the graph and insight
-        st.plotly_chart(fig)
-        st.write(f"### Insight:\n{insight}")
+            # Display the graph and insight
+            st.plotly_chart(fig)
+            st.write(f"### Insight:\n{insight}")
+        except Exception as e:
+            st.error("Atleast one numerical and categorical column")
 
     
+    try:
+        # Outlier Insights Section
+        st.title("Outliers")
+        outlier_insights = outliers(data)
 
-    # Outlier Insights Section
-    st.title("Outliers")
-    outlier_insights = outliers(data)
+        # Plot all outliers in a grid fashion
+        outlier_cols = list(outlier_insights.keys())
+        fig_outliers = make_subplots(rows=1, cols=len(outlier_cols), subplot_titles=outlier_cols)
 
-    # Plot all outliers in a grid fashion
-    outlier_cols = list(outlier_insights.keys())
-    fig_outliers = make_subplots(rows=1, cols=len(outlier_cols), subplot_titles=outlier_cols)
+        for i, col in enumerate(outlier_cols, start=1):
+            fig_box = px.box(data, y=col, title=col)
+            for trace in fig_box.data:
+                fig_outliers.add_trace(trace, row=1, col=i)
 
-    for i, col in enumerate(outlier_cols, start=1):
-        fig_box = px.box(data, y=col, title=col)
-        for trace in fig_box.data:
-            fig_outliers.add_trace(trace, row=1, col=i)
+        fig_outliers.update_layout(title_text="Outliers for Numerical Columns", showlegend=False)
 
-    fig_outliers.update_layout(title_text="Outliers for Numerical Columns", showlegend=False)
-
-    # Display the outlier plots
-    st.plotly_chart(fig_outliers)
-    st.write("### Outlier Insights:")
-    for col, insight in outlier_insights.items():
-        st.write(f"- {insight}")
+        # Display the outlier plots
+        st.plotly_chart(fig_outliers)
+        st.write("### Outlier Insights:")
+        for col, insight in outlier_insights.items():
+            st.write(f"- {insight}")
+    except Exception as e:
+        st.error("The columns must be an integer")
